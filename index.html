@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>小小學習樂園</title>
+    <style>
+        body { font-family: 'Comic Sans MS', 'Segoe UI', cursive; text-align: center; background: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%); min-height: 100vh; padding: 20px; color: #555; }
+        .container { max-width: 600px; margin: 0 auto; background: rgba(255, 255, 255, 0.9); padding: 30px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+        h1 { color: #ff6347; font-size: 2.5em; margin-bottom: 20px; }
+        .btn-menu { display: block; width: 100%; padding: 20px; margin: 15px 0; font-size: 28px; border: none; border-radius: 20px; cursor: pointer; color: white; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.1); font-weight: bold; }
+        .btn-menu:hover { transform: scale(1.02); }
+        .btn-menu:active { transform: scale(0.98); }
+        .btn-zh { background-color: #ffcc00; }
+        .btn-en { background-color: #7b68ee; }
+        .btn-back { background-color: #aaa; margin-top: 30px; padding: 15px 30px; border-radius: 20px; color: white; cursor: pointer; display: inline-block; font-weight: bold; transition: background 0.2s; }
+        .btn-back:hover { background-color: #888; }
+        .grid { display: grid; gap: 15px; margin-top: 20px; }
+        .btn-item { padding: 30px; font-size: 40px; border: 2px solid #ddd; border-radius: 25px; cursor: pointer; background: #fff; transition: transform 0.1s, background-color 0.2s; box-shadow: 0 5px 10px rgba(0,0,0,0.05); }
+        .btn-item:hover { background-color: #fff9e6; transform: scale(1.05); }
+        .btn-item:active { transform: scale(0.95); background-color: #ffe680; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container" id="menu">
+    <h1>🌟 小小學習樂園 🌟</h1>
+    <button class="btn-menu btn-zh" onclick="showPage('zh')">🎨 ㄅㄆㄇ 注音</button>
+    <button class="btn-menu btn-en" onclick="showPage('en')">🍎 ABC 字母發音</button>
+    <button class="btn-menu" style="background-color: #e67e22; margin-top: 15px;" onclick="showPage('daily-menu')">🏡 日常生活練習 (中)</button>
+    <button class="btn-menu" style="background-color: #2980b9; margin-top: 15px;" onclick="showPage('en-daily-menu')">🍎 英文日常生活 (英)</button>
+</div>
+
+<!-- 中文日常生活練習 -->
+<div class="container hidden" id="daily-menu">
+    <h1>🏡 日常生活練習 (中)</h1>
+    <div id="daily-buttons-container" style="display: flex; flex-direction: column; gap: 10px;"></div>
+    <div class="btn-back" onclick="showPage('menu')">🏠 回首頁</div>
+</div>
+
+<!-- 英文日常生活練習 (A-Z排序) -->
+<div class="container hidden" id="en-daily-menu">
+    <h1>🍎 英文日常生活 (英)</h1>
+    <div id="en-daily-buttons-container" style="display: flex; flex-direction: column; gap: 10px;"></div>
+    <div class="btn-back" onclick="showPage('menu')">🏠 回首頁</div>
+</div>
+
+<!-- 詞彙詳細學習頁面 -->
+<div class="container hidden" id="item-page">
+    <h1 id="item-title">詞彙</h1>
+    <div id="item-visual" style="margin: 10px auto; width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; background: #fff5f5; border-radius: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); font-size: 60px;">🍎</div>
+    
+    <div style="display: flex; gap: 15px; justify-content: center;">
+        <!-- 英文區塊 (移至左側) -->
+        <div style="flex: 1; background: #f0f8ff; padding: 10px; border-radius: 15px; border: 2px solid #2980b9;">
+            <h3 style="margin: 5px 0; color: #2980b9;">英文字母</h3>
+            <div id="en-grid" style="display: flex; flex-direction: column; align-items: center; gap: 5px;"></div>
+            <button id="en-word-btn" style="background-color: #3498db; color: white; border: none; padding: 8px 15px; margin-top: 10px; font-size: 16px; border-radius: 10px; cursor: pointer; font-weight: bold;">🔊 聽英文</button>
+        </div>
+        <!-- 中文區塊 (移至右側) -->
+        <div style="flex: 1; background: #fffcf0; padding: 10px; border-radius: 15px; border: 2px solid #f39c12;">
+            <h3 style="margin: 5px 0; color: #d35400;">中文拼音</h3>
+            <div id="zh-grid" style="display: flex; flex-direction: column; align-items: flex-start; gap: 5px;"></div>
+            <button id="zh-word-btn" style="background-color: #f1c40f; color: white; border: none; padding: 8px 15px; margin-top: 10px; font-size: 16px; border-radius: 10px; cursor: pointer; font-weight: bold;">🔊 聽中文</button>
+        </div>
+    </div>
+    <div class="btn-back" style="margin-top: 20px;" onclick="goBack()">🔙 回上頁</div>
+</div>
+
+<div class="container hidden" id="zh">
+    <h1>ㄅㄆㄇ</h1>
+    <div class="grid" style="grid-template-columns: repeat(5, 1fr); gap: 8px;">
+        <script>
+            const zhSymbols = ['ㄅ','ㄆ','ㄇ','ㄈ','ㄉ','ㄊ','ㄋ','ㄌ','ㄍ','ㄎ','ㄏ','ㄐ','ㄑ','ㄒ','ㄓ','ㄔ','ㄕ','ㄖ','ㄗ','ㄘ','ㄙ','ㄚ','ㄛ','ㄜ','ㄝ','ㄞ','ㄟ','ㄠ','ㄡ','ㄢ','ㄣ','ㄤ','ㄥ','ㄦ','ㄧ','ㄨ','ㄩ'];
+            zhSymbols.forEach((s, index) => {
+                document.write(`<button class="btn-item" style="font-size: 24px; padding: 15px;" onclick="playSound('F${index + 1}.WAV')">${s}</button>`);
+            });
+        </script>
+    </div>
+    <div class="btn-back" onclick="showPage('menu')">🏠 回首頁</div>
+</div>
+
+<div class="container hidden" id="en">
+    <h1>ABC 字母表</h1>
+    <div class="grid" style="grid-template-columns: repeat(4, 1fr); gap: 10px;">
+        <script>
+            const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+            alphabet.forEach(letter => {
+                document.write(`<button class="btn-item" style="font-size: 24px; padding: 15px;" onclick="playSound('en/${letter}.m4a')">${letter}</button>`);
+            });
+        </script>
+    </div>
+    <div class="btn-back" onclick="showPage('menu')">🏠 回首頁</div>
+</div>
+
+<script>
+    const items = [
+        { id: 'cup', icon: '🥤', zh: { word: '杯子', target: 'ㄅ', groups: [{char: '杯', parts: ['ㄅ', 'ㄟ', 'ˊ']}, {char: '子', parts: ['ㄗ', '˙']}] }, en: { word: 'Cup', parts: ['C', 'U', 'P'] } },
+        { id: 'apple', icon: '🍎', zh: { word: '蘋果', target: 'ㄆ', groups: [{char: '蘋', parts: ['ㄆ', 'ㄧ', 'ㄥ', 'ˊ']}, {char: '果', parts: ['ㄍ', 'ㄨ', 'ㄛ', 'ˇ']}] }, en: { word: 'Apple', parts: ['A', 'P', 'P', 'L', 'E'] } },
+        { id: 'cat', icon: '🐱', zh: { word: '貓咪', target: 'ㄇ', groups: [{char: '貓', parts: ['ㄇ', 'ㄠ']}, {char: '咪', parts: ['ㄇ', 'ㄧ', '˙']}] }, en: { word: 'Cat', parts: ['C', 'A', 'T'] } },
+        { id: 'fan', icon: '💨', zh: { word: '風扇', target: 'ㄈ', groups: [{char: '風', parts: ['ㄈ', 'ㄥ']}, {char: '扇', parts: ['ㄕ', 'ㄢ', 'ˋ']}] }, en: { word: 'Fan', parts: ['F', 'A', 'N'] } },
+        { id: 'lamp', icon: '💡', zh: { word: '燈泡', target: 'ㄉ', groups: [{char: '燈', parts: ['ㄉ', 'ㄥ']}, {char: '泡', parts: ['ㄆ', 'ㄠ', 'ˋ']}] }, en: { word: 'Bulb', parts: ['B', 'U', 'L', 'B'] } },
+        { id: 'rabbit', icon: '🐰', zh: { word: '兔子', target: 'ㄊ', groups: [{char: '兔', parts: ['ㄊ', 'ㄨ', 'ˋ']}, {char: '子', parts: ['ㄗ', '˙']}] }, en: { word: 'Rabbit', parts: ['R', 'A', 'B', 'B', 'I', 'T'] } },
+        { id: 'milk', icon: '🥛', zh: { word: '牛奶', target: 'ㄋ', groups: [{char: '牛', parts: ['ㄋ', 'ㄧ', 'ㄡ', 'ˊ']}, {char: '奶', parts: ['ㄋ', 'ㄞ', 'ˇ']}] }, en: { word: 'Milk', parts: ['M', 'I', 'L', 'K'] } },
+        { id: 'radish', icon: '🥕', zh: { word: '蘿蔔', target: 'ㄌ', groups: [{char: '蘿', parts: ['ㄌ', 'ㄨ', 'ㄛ', 'ˊ']}, {char: '蔔', parts: ['ㄅ', 'ㄛ', '˙']}] }, en: { word: 'Radish', parts: ['R', 'A', 'D', 'I', 'S', 'H'] } },
+        { id: 'piano', icon: '🎹', zh: { word: '鋼琴', target: 'ㄍ', groups: [{char: '鋼', parts: ['ㄍ', 'ㄤ']}, {char: '琴', parts: ['ㄑ', 'ㄧ', 'ㄣ', 'ˊ']}] }, en: { word: 'Piano', parts: ['P', 'I', 'A', 'N', 'O'] } },
+        { id: 'pants', icon: '👖', zh: { word: '褲子', target: 'ㄎ', groups: [{char: '褲', parts: ['ㄎ', 'ㄨ', 'ˋ']}, {char: '子', parts: ['ㄗ', '˙']}] }, en: { word: 'Pants', parts: ['P', 'A', 'N', 'T', 'S'] } },
+        { id: 'flower', icon: '🌸', zh: { word: '花朵', target: 'ㄏ', groups: [{char: '花', parts: ['ㄏ', 'ㄨ', 'ㄚ']}, {char: '朵', parts: ['ㄉ', 'ㄨ', 'ㄛ', 'ˇ']}] }, en: { word: 'Flower', parts: ['F', 'L', 'O', 'W', 'E', 'R'] } },
+        { id: 'orange', icon: '🍊', zh: { word: '橘子', target: 'ㄐ', groups: [{char: '橘', parts: ['ㄐ', 'ㄩ', 'ˊ']}, {char: '子', parts: ['ㄗ', '˙']}] }, en: { word: 'Orange', parts: ['O', 'R', 'A', 'N', 'G', 'E'] } },
+        { id: 'pencil', icon: '✏️', zh: { word: '鉛筆', target: 'ㄑ', groups: [{char: '鉛', parts: ['ㄑ', 'ㄧ', 'ㄢ', 'ˊ']}, {char: '筆', parts: ['ㄅ', 'ㄧ', 'ˇ']}] }, en: { word: 'Pencil', parts: ['P', 'E', 'N', 'C', 'I', 'L'] } },
+        { id: 'chick', icon: '🐔', zh: { word: '母雞', target: 'ㄒ', groups: [{char: '母', parts: ['ㄇ', 'ㄨ', 'ˇ']}, {char: '雞', parts: ['ㄐ', 'ㄧ']}] }, en: { word: 'Chicken', parts: ['C', 'H', 'I', 'C', 'K', 'E', 'N'] } },
+        { id: 'bamboo', icon: '🎋', zh: { word: '竹子', target: 'ㄓ', groups: [{char: '竹', parts: ['ㄓ', 'ㄨ', 'ˊ']}, {char: '子', parts: ['ㄗ', '˙']}] }, en: { word: 'Bamboo', parts: ['B', 'A', 'M', 'B', 'O', 'O'] } },
+        { id: 'eat', icon: '🍽️', zh: { word: '吃飯', target: 'ㄔ', groups: [{char: '吃', parts: ['ㄔ', 'ㄧ']}, {char: '飯', parts: ['ㄈ', 'ㄢ', 'ˋ']}] }, en: { word: 'Eat', parts: ['E', 'A', 'T'] } },
+        { id: 'bag', icon: '🎒', zh: { word: '書包', target: 'ㄕ', groups: [{char: '書', parts: ['ㄕ', 'ㄨ']}, {char: '包', parts: ['ㄅ', 'ㄠ']}] }, en: { word: 'Bag', parts: ['B', 'A', 'G'] } },
+        { id: 'date', icon: '📅', zh: { word: '日曆', target: 'ㄖ', groups: [{char: '日', parts: ['ㄖ', 'ˋ']}, {char: '曆', parts: ['ㄌ', 'ㄧ', 'ˋ']}] }, en: { word: 'Calendar', parts: ['C', 'A', 'L', 'E', 'N', 'D', 'A', 'R'] } },
+        { id: 'self', icon: '🙋', zh: { word: '自己', target: 'ㄗ', groups: [{char: '自', parts: ['ㄗ', 'ˋ']}, {char: '己', parts: ['ㄐ', 'ㄧ', 'ˇ']}] }, en: { word: 'Self', parts: ['S', 'E', 'L', 'F'] } },
+        { id: 'meal', icon: '🍱', zh: { word: '餐點', target: 'ㄘ', groups: [{char: '餐', parts: ['ㄘ', 'ㄢ']}, {char: '點', parts: ['ㄉ', 'ㄧ', 'ㄢ', 'ˇ']}] }, en: { word: 'Dining', parts: ['D', 'I', 'N', 'I', 'N', 'G'] } },
+        { id: 'luffa', icon: '🥒', zh: { word: '絲瓜', target: 'ㄙ', groups: [{char: '絲', parts: ['ㄙ', 'ㄧ']}, {char: '瓜', parts: ['ㄍ', 'ㄨ', 'ㄚ']}] }, en: { word: 'Luffa', parts: ['L', 'U', 'F', 'F', 'A'] } },
+        { id: 'aunt', icon: '👩', zh: { word: '阿姨', target: 'ㄚ', groups: [{char: '阿', parts: ['ㄚ']}, {char: '姨', parts: ['ㄧ', 'ˊ']}] }, en: { word: 'Aunt', parts: ['A', 'U', 'N', 'T'] } },
+        { id: 'croc', icon: '🐊', zh: { word: '鱷魚', target: 'ㄜ', groups: [{char: '鱷', parts: ['ㄜ', 'ˋ']}, {char: '魚', parts: ['ㄩ', 'ˊ']}] }, en: { word: 'Crocodile', parts: ['C', 'R', 'O', 'C', 'O', 'D', 'I', 'L', 'E'] } },
+        { id: 'ye', icon: '🎅', zh: { word: '耶誕', target: 'ㄝ', groups: [{char: '耶', parts: ['ㄧ', 'ㄝ', 'ˊ']}, {char: '誕', parts: ['ㄉ', 'ㄢ', 'ˋ']}] }, en: { word: 'Christmas', parts: ['C', 'H', 'R', 'I', 'S', 'T', 'M', 'A', 'S'] } },
+        { id: 'heart', icon: '❤️', zh: { word: '愛心', target: 'ㄞ', groups: [{char: '愛', parts: ['ㄞ', 'ˋ']}, {char: '心', parts: ['ㄒ', 'ㄧ', 'ㄣ']}] }, en: { word: 'Heart', parts: ['H', 'E', 'A', 'R', 'T'] } },
+        { id: 'ao', icon: '⛰️', zh: { word: '凹凸', target: 'ㄠ', groups: [{char: '凹', parts: ['ㄠ']}, {char: '凸', parts: ['ㄊ', 'ㄨ', 'ˋ']}] }, en: { word: 'Bumpy', parts: ['B', 'U', 'M', 'P', 'Y'] } },
+        { id: 'ou', icon: '🇪🇺', zh: { word: '歐洲', target: 'ㄡ', groups: [{char: '歐', parts: ['ㄡ']}, {char: '洲', parts: ['ㄓ', 'ㄡ']}] }, en: { word: 'Europe', parts: ['E', 'U', 'R', 'O', 'P', 'E'] } },
+        { id: 'safe', icon: '🛡️', zh: { word: '安全', target: 'ㄢ', groups: [{char: '安', parts: ['ㄢ']}, {char: '全', parts: ['ㄑ', 'ㄩ', 'ㄢ', 'ˊ']}] }, en: { word: 'Safe', parts: ['S', 'A', 'F', 'E'] } },
+        { id: 'favor', icon: '👤', zh: { word: '恩惠', target: 'ㄣ', groups: [{char: '恩', parts: ['ㄣ']}, {char: '惠', parts: ['ㄏ', 'ㄨ', 'ㄟ', 'ˋ']}] }, en: { word: 'Favor', parts: ['F', 'A', 'V', 'O', 'R'] } },
+        { id: 'ang', icon: '💎', zh: { word: '昂貴', target: 'ㄤ', groups: [{char: '昂', parts: ['ㄤ', 'ˊ']}, {char: '貴', parts: ['ㄍ', 'ㄨ', 'ㄟ', 'ˋ']}] }, en: { word: 'Costly', parts: ['C', 'O', 'S', 'T', 'L', 'Y'] } },
+        { id: 'ear', icon: '👂', zh: { word: '耳朵', target: 'ㄦ', groups: [{char: '耳', parts: ['ㄦ', 'ˇ']}, {char: '朵', parts: ['ㄉ', 'ㄨ', 'ㄛ', 'ˇ']}] }, en: { word: 'Ear', parts: ['E', 'A', 'R'] } },
+        { id: 'one', icon: '1️⃣', zh: { word: '一個', target: 'ㄧ', groups: [{char: '一', parts: ['ㄧ', 'ˊ']}, {char: '個', parts: ['ㄍ', 'ㄜ', '˙']}] }, en: { word: 'One', parts: ['O', 'N', 'E'] } },
+        { id: 'five', icon: '5️⃣', zh: { word: '五個', target: 'ㄨ', groups: [{char: '五', parts: ['ㄨ', 'ˇ']}, {char: '個', parts: ['ㄍ', 'ㄜ', '˙']}] }, en: { word: 'Five', parts: ['F', 'I', 'V', 'E'] } },
+        { id: 'fish', icon: '🐟', zh: { word: '小魚', target: 'ㄩ', groups: [{char: '小', parts: ['ㄒ', 'ㄧ', 'ㄠ', 'ˇ']}, {char: '魚', parts: ['ㄩ', 'ˊ']}] }, en: { word: 'Fish', parts: ['F', 'I', 'S', 'H'] } }
+    ];
+
+    const enDailyItems = [
+        { id: 'apple', icon: '🍎', zh: { word: '蘋果', target: 'ㄆ', groups: [{char: '蘋', parts: ['ㄆ', 'ㄧ', 'ㄥ', 'ˊ']}, {char: '果', parts: ['ㄍ', 'ㄨ', 'ㄛ', 'ˇ']}] }, en: { word: 'Apple', parts: ['A', 'P', 'P', 'L', 'E'] } },
+        { id: 'ball', icon: '⚽', zh: { word: '皮球', target: 'ㄆ', groups: [{char: '皮', parts: ['ㄆ', 'ㄧ', 'ˊ']}, {char: '球', parts: ['ㄑ', 'ㄧ', 'ㄡ', 'ˊ']}] }, en: { word: 'Ball', parts: ['B', 'A', 'L', 'L'] } },
+        { id: 'cat', icon: '🐱', zh: { word: '貓咪', target: 'ㄇ', groups: [{char: '貓', parts: ['ㄇ', 'ㄠ']}, {char: '咪', parts: ['ㄇ', 'ㄧ', '˙']}] }, en: { word: 'Cat', parts: ['C', 'A', 'T'] } },
+        { id: 'dog', icon: '🐶', zh: { word: '狗狗', target: 'ㄉ', groups: [{char: '狗', parts: ['ㄍ', 'ㄡ', 'ˇ']}, {char: '狗', parts: ['ㄍ', 'ㄡ', 'ˇ']}] }, en: { word: 'Dog', parts: ['D', 'O', 'G'] } },
+        { id: 'egg', icon: '🥚', zh: { word: '雞蛋', target: 'ㄐ', groups: [{char: '雞', parts: ['ㄐ', 'ㄧ']}, {char: '蛋', parts: ['ㄉ', 'ㄢ', 'ˋ']}] }, en: { word: 'Egg', parts: ['E', 'G', 'G'] } },
+        { id: 'fish', icon: '🐟', zh: { word: '小魚', target: 'ㄒ', groups: [{char: '小', parts: ['ㄒ', 'ㄧ', 'ㄠ', 'ˇ']}, {char: '魚', parts: ['ㄩ', 'ˊ']}] }, en: { word: 'Fish', parts: ['F', 'I', 'S', 'H'] } },
+        { id: 'goat', icon: '🐐', zh: { word: '山羊', target: 'ㄕ', groups: [{char: '山', parts: ['ㄕ', 'ㄢ']}, {char: '羊', parts: ['ㄧ', 'ㄤ', 'ˊ']}] }, en: { word: 'Goat', parts: ['G', 'O', 'A', 'T'] } },
+        { id: 'hat', icon: '👒', zh: { word: '帽子', target: 'ㄇ', groups: [{char: '帽', parts: ['ㄇ', 'ㄠ', 'ˋ']}, {char: '子', parts: ['ㄗ', '˙']}] }, en: { word: 'Hat', parts: ['H', 'A', 'T'] } },
+        { id: 'ink', icon: '🖋️', zh: { word: '墨水', target: 'ㄇ', groups: [{char: '墨', parts: ['ㄇ', 'ㄛ', 'ˋ']}, {char: '水', parts: ['ㄕ', 'ㄨ', 'ㄟ', 'ˇ']}] }, en: { word: 'Ink', parts: ['I', 'N', 'K'] } },
+        { id: 'jet', icon: '✈️', zh: { word: '噴射機', target: 'ㄆ', groups: [{char: '噴', parts: ['ㄆ', 'ㄣ', 'ˋ']}, {char: '射', parts: ['ㄕ', 'ㄜ', 'ˋ']}, {char: '機', parts: ['ㄐ', 'ㄧ']}] }, en: { word: 'Jet', parts: ['J', 'E', 'T'] } },
+        { id: 'kite', icon: '🪁', zh: { word: '風箏', target: 'ㄈ', groups: [{char: '風', parts: ['ㄈ', 'ㄥ']}, {char: '箏', parts: ['ㄓ', 'ㄥ']}] }, en: { word: 'Kite', parts: ['K', 'I', 'T', 'E'] } },
+        { id: 'lion', icon: '🦁', zh: { word: '獅子', target: 'ㄕ', groups: [{char: '獅', parts: ['ㄕ', 'ㄧ']}, {char: '子', parts: ['ㄗ', '˙']}] }, en: { word: 'Lion', parts: ['L', 'I', 'O', 'N'] } },
+        { id: 'moon', icon: '🌙', zh: { word: '月亮', target: 'ㄩ', groups: [{char: '月', parts: ['ㄩ', 'ㄝ', 'ˋ']}, {char: '亮', parts: ['ㄌ', 'ㄧ', 'ㄤ', 'ˋ']}] }, en: { word: 'Moon', parts: ['M', 'O', 'O', 'N'] } },
+        { id: 'nose', icon: '👃', zh: { word: '鼻子', target: 'ㄅ', groups: [{char: '鼻', parts: ['ㄅ', 'ㄧ', 'ˊ']}, {char: '子', parts: ['ㄗ', '˙']}] }, en: { word: 'Nose', parts: ['N', 'O', 'S', 'E'] } },
+        { id: 'owl', icon: '🦉', zh: { word: '貓頭鷹', target: 'ㄇ', groups: [{char: '貓', parts: ['ㄇ', 'ㄠ']}, {char: '頭', parts: ['ㄊ', 'ㄡ', 'ˊ']}, {char: '鷹', parts: ['ㄧ', 'ㄥ']}] }, en: { word: 'Owl', parts: ['O', 'W', 'L'] } },
+        { id: 'pig', icon: '🐷', zh: { word: '小豬', target: 'ㄒ', groups: [{char: '小', parts: ['ㄒ', 'ㄧ', 'ㄠ', 'ˇ']}, {char: '豬', parts: ['ㄓ', 'ㄨ']}] }, en: { word: 'Pig', parts: ['P', 'I', 'G'] } },
+        { id: 'queen', icon: '👑', zh: { word: '女王', target: 'ㄋ', groups: [{char: '女', parts: ['ㄋ', 'ㄩ', 'ˇ']}, {char: '王', parts: ['ㄨ', 'ㄤ', 'ˊ']}] }, en: { word: 'Queen', parts: ['Q', 'U', 'E', 'E', 'N'] } },
+        { id: 'ring', icon: '💍', zh: { word: '戒指', target: 'ㄐ', groups: [{char: '戒', parts: ['ㄐ', 'ㄧ', 'ㄝ', 'ˋ']}, {char: '指', parts: ['ㄓ', 'ˇ']}] }, en: { word: 'Ring', parts: ['R', 'I', 'N', 'G'] } },
+        { id: 'star', icon: '⭐', zh: { word: '星星', target: 'ㄒ', groups: [{char: '星', parts: ['ㄒ', 'ㄧ', 'ㄥ']}, {char: '星', parts: ['ㄒ', 'ㄧ', 'ㄥ']}] }, en: { word: 'Star', parts: ['S', 'T', 'A', 'R'] } },
+        { id: 'tent', icon: '⛺', zh: { word: '帳篷', target: 'ㄓ', groups: [{char: '帳', parts: ['ㄓ', 'ㄤ', 'ˋ']}, {char: '篷', parts: ['ㄆ', 'ㄥ', 'ˊ']}] }, en: { word: 'Tent', parts: ['T', 'E', 'N', 'T'] } },
+        { id: 'umbrella', icon: '🌂', zh: { word: '雨傘', target: 'ㄩ', groups: [{char: '雨', parts: ['ㄩ', 'ˇ']}, {char: '傘', parts: ['ㄙ', 'ㄢ', 'ˇ']}] }, en: { word: 'Umbrella', parts: ['U', 'M', 'B', 'R', 'E', 'L', 'L', 'A'] } },
+        { id: 'van', icon: '🚐', zh: { word: '貨車', target: 'ㄏ', groups: [{char: '貨', parts: ['ㄏ', 'ㄨ', 'ㄛ', 'ˋ']}, {char: '車', parts: ['ㄔ', 'ㄜ']}] }, en: { word: 'Van', parts: ['V', 'A', 'N'] } },
+        { id: 'watch', icon: '⌚', zh: { word: '手錶', target: 'ㄕ', groups: [{char: '手', parts: ['ㄕ', 'ㄡ', 'ˇ']}, {char: '錶', parts: ['ㄅㄧ', 'ㄠ', 'ˇ']}] }, en: { word: 'Watch', parts: ['W', 'A', 'T', 'C', 'H'] } },
+        { id: 'box', icon: '📦', zh: { word: '盒子', target: 'ㄏ', groups: [{char: '盒', parts: ['ㄏ', 'ㄜ', 'ˊ']}, {char: '子', parts: ['ㄗ', '˙']}] }, en: { word: 'X-ray', parts: ['X', '-', 'R', 'A', 'Y'] } },
+        { id: 'yoyo', icon: '🪀', zh: { word: '溜溜球', target: 'ㄌ', groups: [{char: '溜', parts: ['ㄌ', 'ㄧ', 'ㄡ', 'ˋ']}, {char: '溜', parts: ['ㄌ', 'ㄧ', 'ㄡ', 'ˋ']}, {char: '球', parts: ['ㄑ', 'ㄧ', 'ㄡ', 'ˊ']}] }, en: { word: 'Yo-yo', parts: ['Y', 'O', '-', 'Y', 'O'] } },
+        { id: 'zebra', icon: '🦓', zh: { word: '斑馬', target: 'ㄅ', groups: [{char: '斑', parts: ['ㄅ', 'ㄢ']}, {char: '馬', parts: ['ㄇ', 'ㄚ', 'ˇ']}] }, en: { word: 'Zebra', parts: ['Z', 'E', 'B', 'R', 'A'] } }
+    ];
+
+    let lastMenu = 'daily-menu';
+
+    window.onload = function() {
+        const dailyContainer = document.getElementById('daily-buttons-container');
+        const enDailyContainer = document.getElementById('en-daily-buttons-container');
+        
+        items.forEach(item => {
+            const btnDaily = document.createElement('button');
+            btnDaily.className = 'btn-menu';
+            btnDaily.style.cssText = 'background-color: #8e44ad; padding: 15px; font-size: 24px; text-align: left;';
+            btnDaily.innerHTML = `${item.zh.target} ${item.zh.word} / ${item.en.word}`;
+            btnDaily.onclick = () => loadCombinedItem(item.id, 'daily-menu', items);
+            dailyContainer.appendChild(btnDaily);
+        });
+
+        enDailyItems.forEach(item => {
+            const btnEn = document.createElement('button');
+            btnEn.className = 'btn-menu';
+            btnEn.style.cssText = 'background-color: #2980b9; padding: 15px; font-size: 24px; text-align: left;';
+            btnEn.innerHTML = `${item.icon} ${item.en.word}`;
+            btnEn.onclick = () => loadCombinedItem(item.id, 'en-daily-menu', enDailyItems);
+            enDailyContainer.appendChild(btnEn);
+        });
+    };
+
+    function loadCombinedItem(id, menuId, dataArray) {
+        lastMenu = menuId;
+        const item = dataArray.find(i => i.id === id);
+        if (!item) return;
+        
+        const itemTitle = document.getElementById('item-title');
+        if (menuId === 'en-daily-menu') {
+            const firstLetter = item.en.word.charAt(0);
+            const restOfWord = item.en.word.slice(1);
+            itemTitle.innerHTML = `${item.zh.word} (<span style="color: red;">${firstLetter}</span>${restOfWord})`;
+        } else {
+            itemTitle.innerText = item.zh.word + " (" + item.en.word + ")";
+        }
+        document.getElementById('item-visual').innerText = item.icon;
+        
+        const zhGrid = document.getElementById('zh-grid');
+        const enGrid = document.getElementById('en-grid');
+        zhGrid.innerHTML = '';
+        enGrid.innerHTML = '';
+        
+        // 決定區塊順序：中文練習 (中文左/英文右)，英文練習 (英文左/中文右)
+        const contentContainer = zhGrid.parentElement.parentElement;
+        contentContainer.innerHTML = ''; // 清除原有的兩個區塊
+        
+        const enBlock = document.createElement('div');
+        enBlock.style.cssText = 'flex: 1; background: #f0f8ff; padding: 10px; border-radius: 15px; border: 2px solid #2980b9;';
+        enBlock.innerHTML = '<h3 style="margin: 5px 0; color: #2980b9;">英文字母</h3><div id="en-grid" style="display: flex; flex-direction: column; align-items: center; gap: 5px;"></div><button id="en-word-btn" style="background-color: #3498db; color: white; border: none; padding: 8px 15px; margin-top: 10px; font-size: 16px; border-radius: 10px; cursor: pointer; font-weight: bold;">🔊 聽英文</button>';
+        
+        const zhBlock = document.createElement('div');
+        zhBlock.style.cssText = 'flex: 1; background: #fffcf0; padding: 10px; border-radius: 15px; border: 2px solid #f39c12;';
+        zhBlock.innerHTML = '<h3 style="margin: 5px 0; color: #d35400;">中文拼音</h3><div id="zh-grid" style="display: flex; flex-direction: column; align-items: flex-start; gap: 5px;"></div><button id="zh-word-btn" style="background-color: #f1c40f; color: white; border: none; padding: 8px 15px; margin-top: 10px; font-size: 16px; border-radius: 10px; cursor: pointer; font-weight: bold;">🔊 聽中文</button>';
+        
+        if (menuId === 'daily-menu') {
+            contentContainer.appendChild(zhBlock);
+            contentContainer.appendChild(enBlock);
+        } else {
+            contentContainer.appendChild(enBlock);
+            contentContainer.appendChild(zhBlock);
+        }
+
+        // 重新獲取並填充新的容器
+        const currentZhGrid = contentContainer.querySelector('#zh-grid');
+        const currentEnGrid = contentContainer.querySelector('#en-grid');
+        
+        // 填充英文內容
+        const enRow = document.createElement('div');
+        enRow.style.display = 'flex';
+        enRow.style.justifyContent = 'center';
+        enRow.style.gap = '5px';
+        item.en.parts.forEach(part => {
+            const btn = document.createElement('button');
+            btn.className = 'btn-item';
+            btn.style.fontSize = '20px';
+            btn.style.padding = '10px';
+            btn.innerText = part;
+            btn.onclick = () => playSound('en/' + part + '.m4a');
+            
+            // 英文日常生活練習：首字母標紅
+            if (menuId === 'en-daily-menu' && part === item.en.word.charAt(0)) {
+                btn.style.color = 'red';
+            } else {
+                btn.style.color = 'black';
+            }
+            
+            enRow.appendChild(btn);
+        });
+        currentEnGrid.appendChild(enRow);
+        
+        // 填充中文內容
+        item.zh.groups.forEach(group => {
+            const row = document.createElement('div');
+            row.style.display = 'flex';
+            row.style.alignItems = 'center';
+            row.style.justifyContent = 'flex-start';
+            row.style.gap = '10px';
+            row.style.marginBottom = '5px';
+            
+            const charSpan = document.createElement('span');
+            charSpan.innerText = group.char;
+            charSpan.style.fontSize = '30px';
+            charSpan.style.fontWeight = 'bold';
+            charSpan.style.minWidth = '40px';
+            charSpan.style.textAlign = 'center';
+            row.appendChild(charSpan);
+            
+            group.parts.forEach(part => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-item';
+                btn.style.fontSize = '20px';
+                btn.style.padding = '10px';
+                
+                const isTone = /[ˊˇˋ˙]/.test(part);
+                
+                if (isTone) {
+                    btn.style.color = 'blue';
+                    btn.style.cursor = 'default';
+                    btn.onclick = null;
+                } else {
+                    // 僅在中文日常生活練習模式下，目標注音標紅
+                    if (menuId === 'daily-menu' && part === item.zh.target) {
+                        btn.style.color = 'red';
+                    } else {
+                        btn.style.color = 'black';
+                    }
+                    btn.onclick = () => speakZh(part);
+                }
+                
+                btn.innerText = part;
+                row.appendChild(btn);
+            });
+            currentZhGrid.appendChild(row);
+        });
+
+        contentContainer.querySelector('#zh-word-btn').onclick = () => speakZhWord(item.zh.word);
+        contentContainer.querySelector('#en-word-btn').onclick = () => speakEn(item.en.word);
+
+        showPage('item-page');
+    }
+
+    function showPage(id) {
+        document.getElementById('menu').classList.add('hidden');
+        document.getElementById('zh').classList.add('hidden');
+        document.getElementById('en').classList.add('hidden');
+        document.getElementById('daily-menu').classList.add('hidden');
+        document.getElementById('en-daily-menu').classList.add('hidden');
+        document.getElementById('item-page').classList.add('hidden');
+        document.getElementById(id).classList.remove('hidden');
+    }
+
+    function goBack() {
+        showPage(lastMenu);
+    }
+
+    function playSound(file) {
+        window.speechSynthesis.cancel();
+        const audio = new Audio('sounds/' + file);
+        audio.play();
+    }
+
+    const zhMap = {
+        'ㄅ': 'F1.WAV', 'ㄆ': 'F2.WAV', 'ㄇ': 'F3.WAV', 'ㄈ': 'F4.WAV',
+        'ㄉ': 'F5.WAV', 'ㄊ': 'F6.WAV', 'ㄋ': 'F7.WAV', 'ㄌ': 'F8.WAV',
+        'ㄍ': 'F9.WAV', 'ㄎ': 'F10.WAV', 'ㄏ': 'F11.WAV',
+        'ㄐ': 'F12.WAV', 'ㄑ': 'F13.WAV', 'ㄒ': 'F14.WAV',
+        'ㄓ': 'F15.WAV', 'ㄔ': 'F16.WAV', 'ㄕ': 'F17.WAV', 'ㄖ': 'F18.WAV',
+        'ㄗ': 'F19.WAV', 'ㄘ': 'F20.WAV', 'ㄙ': 'F21.WAV',
+        'ㄚ': 'F22.WAV', 'ㄛ': 'F23.WAV', 'ㄜ': 'F24.WAV', 'ㄝ': 'F25.WAV',
+        'ㄞ': 'F26.WAV', 'ㄟ': 'F27.WAV', 'ㄠ': 'F28.WAV', 'ㄡ': 'F29.WAV',
+        'ㄢ': 'F30.WAV', 'ㄣ': 'F31.WAV', 'ㄤ': 'F32.WAV', 'ㄥ': 'F33.WAV',
+        'ㄦ': 'F34.WAV', 'ㄧ': 'F35.WAV', 'ㄨ': 'F36.WAV', 'ㄩ': 'F37.WAV'
+    };
+
+    function speakZhWord(word) {
+        window.speechSynthesis.cancel();
+        const msg = new SpeechSynthesisUtterance(word);
+        msg.lang = 'zh-TW';
+        msg.pitch = 1.0;
+        msg.rate = 0.8;
+        window.speechSynthesis.speak(msg);
+    }
+
+    function speakZh(char) {
+        const cleanChar = char.replace(/[ˊˇˋ˙]/g, '');
+        if (zhMap[cleanChar]) playSound(zhMap[cleanChar]);
+        else {
+            const msg = new SpeechSynthesisUtterance(char);
+            msg.lang = 'zh-TW';
+            window.speechSynthesis.speak(msg);
+        }
+    }
+
+    function speakEn(text) {
+        window.speechSynthesis.cancel();
+        const msg = new SpeechSynthesisUtterance(text);
+        msg.lang = 'en-US';
+        msg.pitch = 0.9;
+        msg.rate = 0.7;
+        window.speechSynthesis.speak(msg);
+    }
+</script>
+</body>
+</html>
